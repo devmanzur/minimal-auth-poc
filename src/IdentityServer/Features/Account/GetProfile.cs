@@ -7,7 +7,7 @@ namespace IdentityServer.Features.Account;
 
 public record GetProfileQuery() : IRequest<GetProfileResponse>;
 
-public record GetProfileResponse(string Id, string? FirstName, string? LastName, string? EmailAddress );
+public record GetProfileResponse(string Id, string? FirstName, string? LastName, string? EmailAddress, bool EmailVerified );
 
 public class GetProfileQueryHandler(UserManager<ApplicationUser> userManager, RequestContextProvider requestContextProvider) : IRequestHandler<GetProfileQuery, GetProfileResponse>
 {
@@ -17,7 +17,7 @@ public class GetProfileQueryHandler(UserManager<ApplicationUser> userManager, Re
         var user = await userManager.FindByIdAsync(signedInUser.Id);
         if (user is not null)
         {
-            return new GetProfileResponse(user.Id, user.FirstName,user.LastName, user.Email);
+            return new GetProfileResponse(user.Id, user.FirstName,user.LastName, user.Email, user.EmailConfirmed);
         }
 
         throw new InvalidOperationException("Profile not found");

@@ -10,7 +10,7 @@ using OpenIddict.Abstractions;
 
 namespace IdentityServer.Controllers
 {
-    public partial class AuthorizationController(IMediator mediator, UserManager<ApplicationUser> userManager,
+    public partial class AuthorizationController(ISender mediator, UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<IdentityOptions> identityOptions)
         : BaseApiController

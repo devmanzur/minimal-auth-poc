@@ -1,6 +1,40 @@
-@IdentityServer_HostAddress = http://localhost:5071
+@IdentityServer = http://localhost:5071
 
-GET {{IdentityServer_HostAddress}}/weatherforecast/
-Accept: application/json
+### Sign Up
+
+POST {{IdentityServer}}/api/accounts
+accept: */*
+Content-Type: application/json
+
+{
+  "email": "levirgon@gmail.com",
+  "password": "12345678",
+  "firstName": "Manzur",
+  "lastName": "Alahi"
+}
+
+### Sign In
+
+POST {{IdentityServer}}/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+username = levirgon%40gmail.com &
+password = 12345678 &
+grant_type = password &
+scope = offline_access+core-scope &
+client_id = postman &
+client_secret = postman-secret
+
+> {%
+    client.global.set("access_token", response.body.access_token);
+    client.global.set("refresh_token", response.body.refresh_token);
+%}
+
+### Get User Profile
+
+GET {{IdentityServer}}/connect/userinfo
+Authorization: Bearer {{access_token}}
+accept: text/plain
 
 ###
+

@@ -9,21 +9,14 @@ using OpenIddict.Server.AspNetCore;
 
 namespace IdentityServer.Controllers
 {
-    public class AccountsController : BaseApiController
+    public class AccountsController(ISender mediator) : BaseApiController
     {
-        private readonly IMediator _mediator;
-
-        public AccountsController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult> Register([FromBody] SignUpCommand request)
         {
             var registerUser =
-                await _mediator.Send(request);
+                await mediator.Send(request);
             return Ok(registerUser);
         }
 
@@ -31,14 +24,14 @@ namespace IdentityServer.Controllers
          HttpGet(Endpoints.Profile)]
         public async Task<ActionResult<GetProfileResponse>> Profile()
         {
-            var profile = await _mediator.Send(new GetProfileQuery());
+            var profile = await mediator.Send(new GetProfileQuery());
             return Ok(profile);
         }
         
         [HttpPost(Endpoints.ChangePassword), Authorize(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)]
         public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordCommand request)
         {
-            await _mediator.Send(request);
+            await mediator.Send(request);
             await HttpContext.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             return Challenge(authenticationSchemes: IdentityConstants.ApplicationScheme);
         }
@@ -47,7 +40,7 @@ namespace IdentityServer.Controllers
         [HttpPost(Endpoints.ForgotPassword)]
         public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordCommand request)
         {
-            var forgotPassword = await _mediator.Send(request);
+            var forgotPassword = await mediator.Send(request);
             return Ok(forgotPassword);
         }
 
@@ -55,7 +48,7 @@ namespace IdentityServer.Controllers
         [HttpPost(Endpoints.ResetPassword)]
         public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordCommand request)
         {
-            var resetPassword = await _mediator.Send(request);
+            var resetPassword = await mediator.Send(request);
             return Ok(resetPassword);
         }
     }

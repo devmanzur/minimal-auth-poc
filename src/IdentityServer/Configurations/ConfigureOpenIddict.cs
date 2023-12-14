@@ -1,9 +1,11 @@
-﻿using IdentityServer.BackgroundServices;
-using IdentityServer.Brokers;
+﻿using System.Reflection;
+using FluentValidation;
+using IdentityServer.BackgroundServices;
 using IdentityServer.Brokers.Database;
 using IdentityServer.Brokers.Providers;
 using IdentityServer.Domain.Models;
 using IdentityServer.Shared.Utils;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +25,14 @@ public static class ConfigureOpenIddict
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ApplicationUser).Assembly));
         services.AddHostedService<ClientSeedingService>();
         services.AddHttpContextAccessor();
+        
+        var asm = Assembly.GetExecutingAssembly();
+        services.AddValidatorsFromAssembly(asm);
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(asm);
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        });
 
         #region identity configuration
 
