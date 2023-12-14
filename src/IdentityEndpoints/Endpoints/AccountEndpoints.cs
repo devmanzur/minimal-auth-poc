@@ -34,7 +34,8 @@ public static class AccountEndpoints
             return Envelope.Success(resetPassword);
         });
 
-        var accountGroup = routeGroup.MapGroup("/manage").RequireAuthorization();
+        var accountGroup = routeGroup.MapGroup("/manage")
+            .RequireAuthorization();
 
         accountGroup.MapGet("/info", async Task<Results<Ok<Envelope<GetProfileResponse>>, ValidationProblem, NotFound>>
             ([FromServices] ISender sender) =>

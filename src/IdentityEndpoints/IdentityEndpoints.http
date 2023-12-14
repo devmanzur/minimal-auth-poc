@@ -65,7 +65,7 @@ Content-Type: application/json
 
 ### Reset Password
 
-POST https://localhost:7173/accounts/reset-password
+POST {{IdentityEndpoints}}/accounts/reset-password
 accept: application/json
 Content-Type: application/json
 

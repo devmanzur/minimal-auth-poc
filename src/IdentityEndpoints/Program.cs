@@ -1,6 +1,7 @@
 using IdentityEndpoints.Configurations;
 using IdentityEndpoints.Domain.Models;
 using IdentityEndpoints.Endpoints;
+using IdentityEndpoints.Shared.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureIdentity(builder.Configuration);
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var app = builder.Build();
+
+app.UseExceptionHandler(_ => { });
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
