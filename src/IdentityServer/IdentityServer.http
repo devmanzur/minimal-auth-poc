@@ -2,12 +2,12 @@
 
 ### Sign Up
 
-POST {{IdentityServer}}/api/accounts
+POST {{IdentityServer}}/accounts
 accept: */*
 Content-Type: application/json
 
 {
-  "email": "levirgon",
+  "email": "levirgon@gmail.com",
   "password": "12345678",
   "firstName": "Manzur",
   "lastName": "Alahi"
@@ -32,7 +32,7 @@ client_secret = postman-secret
 
 ### Get User Profile
 
-GET {{IdentityServer}}/connect/userinfo
+GET {{IdentityServer}}/accounts/manage/info
 Authorization: Bearer {{access_token}}
 accept: text/plain
 
@@ -51,6 +51,31 @@ refresh_token = {{refresh_token}}
     client.global.set("access_token", response.body.access_token);
     client.global.set("refresh_token", response.body.refresh_token);
 %}
+
+### Forgot Password
+
+POST {{IdentityServer}}/accounts/forgot-password
+accept: application/json
+Content-Type: application/json
+
+{
+  "email": "levirgon@gmail.com"
+}
+
+> {%
+    client.global.set("reset_token", response.body.data.resetToken);
+%}
+
+### Reset Password
+
+POST {{IdentityServer}}/accounts/reset-password
+accept: application/json
+Content-Type: application/json
+
+{
+  "email": "levirgon@gmail.com",
+  "token": "{{reset_token}}"
+}
 
 ###
 

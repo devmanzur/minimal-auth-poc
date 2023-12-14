@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using IdentityServer.Brokers.Providers;
+﻿using System.Security.Claims;
+using FluentValidation;
 using IdentityServer.Domain.Models;
 using IdentityServer.Shared.Utils;
 using MediatR;
@@ -31,12 +31,11 @@ public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCo
 
 public class ChangePasswordCommandHandler(
     UserManager<ApplicationUser> userManager,
-    RequestContextProvider requestContextProvider) : IRequestHandler<ChangePasswordCommand, ChangePasswordResponse>
+    IHttpContextAccessor httpContext) : IRequestHandler<ChangePasswordCommand, ChangePasswordResponse>
 {
     public async Task<ChangePasswordResponse> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
-        var signedInUser = requestContextProvider.GetOpenIdSchemeAuthorizedUser();
-        var user = await userManager.FindByIdAsync(signedInUser.Id!);
+        var user = await userManager.GetUserAsync(httpContext.HttpContext!.User);
         if (user is null)
         {
             throw new InvalidOperationException("User not found!");

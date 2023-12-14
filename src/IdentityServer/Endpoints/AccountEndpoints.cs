@@ -1,10 +1,12 @@
-﻿using IdentityEndpoints.Features.Account;
-using IdentityEndpoints.Shared.Contracts;
+﻿using IdentityServer.Features.Account;
+using IdentityServer.Shared.Contracts;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using OpenIddict.Validation.AspNetCore;
 
-namespace IdentityEndpoints.Endpoints;
+namespace IdentityServer.Endpoints;
 
 public static class AccountEndpoints
 {
@@ -34,16 +36,19 @@ public static class AccountEndpoints
             return Envelope.Success(resetPassword);
         });
 
-        var accountGroup = routeGroup.MapGroup("/manage").RequireAuthorization();
+        var accountGroup = routeGroup.MapGroup("/manage");
 
-        accountGroup.MapGet("/info", async Task<Results<Ok<Envelope<GetProfileResponse>>, ValidationProblem, NotFound>>
-            ([FromServices] ISender sender) =>
-        {
-            var profile = await sender.Send(new GetProfileQuery());
-            return Envelope.Success(profile);
-        });
+        accountGroup.MapGet("/info",
+            [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+            async Task<Results<Ok<Envelope<GetProfileResponse>>, ValidationProblem, NotFound>>
+                ([FromServices] ISender sender) =>
+            {
+                var profile = await sender.Send(new GetProfileQuery());
+                return Envelope.Success(profile);
+            });
 
         accountGroup.MapPost("/change-password",
+            [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
             async Task<Ok<Envelope<ChangePasswordResponse>>> ([FromBody] ChangePasswordCommand request,
                 [FromServices] ISender sender) =>
             {
@@ -51,5 +56,4 @@ public static class AccountEndpoints
                 return Envelope.Success(changePassword);
             });
     }
-
 }

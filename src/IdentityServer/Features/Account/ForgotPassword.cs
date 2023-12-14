@@ -1,13 +1,17 @@
-﻿using FluentValidation;
+﻿using System.Text;
+using FluentValidation;
 using IdentityServer.Domain.Models;
 using IdentityServer.Shared.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace IdentityServer.Features.Account;
 
 public record ForgotPasswordCommand(string Email) : IRequest<ForgotPasswordResponse>;
+
 public record ForgotPasswordResponse(NotificationRecipient Recipient, string ResetToken);
+
 public record NotificationRecipient(string Name, string Email);
 
 public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCommand>
@@ -19,7 +23,8 @@ public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCo
     }
 }
 
-public class ForgotPasswordCommandHandler(UserManager<ApplicationUser> userManager) : IRequestHandler<ForgotPasswordCommand, ForgotPasswordResponse>
+public class ForgotPasswordCommandHandler(UserManager<ApplicationUser> userManager)
+    : IRequestHandler<ForgotPasswordCommand, ForgotPasswordResponse>
 {
     public async Task<ForgotPasswordResponse> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
@@ -28,8 +33,9 @@ public class ForgotPasswordCommandHandler(UserManager<ApplicationUser> userManag
         {
             throw new InvalidOperationException("User not found");
         }
-        
+
         var passwordResetToken = await userManager.GeneratePasswordResetTokenAsync(user);
-        return new ForgotPasswordResponse(new NotificationRecipient(user.FullName, user.Email!), passwordResetToken);
+        return new ForgotPasswordResponse(new NotificationRecipient(user.FullName, user.Email!),
+            WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(passwordResetToken)));
     }
 }

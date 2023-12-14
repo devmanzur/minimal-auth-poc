@@ -1,12 +1,9 @@
 using IdentityServer.Configurations;
+using IdentityServer.Endpoints;
 using IdentityServer.Shared.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -18,7 +15,7 @@ builder.Services.AddRouting(options =>
     options.LowercaseQueryStrings = true;
 });
 // Setup OpenIddict
-builder.Services.AddAuthenticationModule(builder.Configuration);
+builder.Services.ConfigureIdentity(builder.Configuration);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -38,6 +35,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+
+app.MapIdentityEndpoints();
+app.MapAccountEndpoints();
 
 app.Run();

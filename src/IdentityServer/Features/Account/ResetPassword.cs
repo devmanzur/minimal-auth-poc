@@ -1,8 +1,10 @@
-﻿using FluentValidation;
+﻿using System.Text;
+using FluentValidation;
 using IdentityServer.Domain.Models;
 using IdentityServer.Shared.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace IdentityServer.Features.Account;
 
@@ -12,7 +14,6 @@ public record ResetPasswordResponse(string Message);
 
 public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordCommand>
 {
-
     public ResetPasswordCommandValidator()
     {
         RuleFor(x => x.Token).NotNull().NotEmpty();
@@ -21,7 +22,8 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
     }
 }
 
-public class ResetPasswordCommandHandler(UserManager<ApplicationUser> userManager) : IRequestHandler<ResetPasswordCommand, ResetPasswordResponse>
+public class ResetPasswordCommandHandler(UserManager<ApplicationUser> userManager)
+    : IRequestHandler<ResetPasswordCommand, ResetPasswordResponse>
 {
     public async Task<ResetPasswordResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
@@ -34,11 +36,13 @@ public class ResetPasswordCommandHandler(UserManager<ApplicationUser> userManage
         var systemGeneratedPassword = PasswordUtils.CreateStrongPassword();
 
         var resetPassword =
-            await userManager.ResetPasswordAsync(user, request.Token, systemGeneratedPassword);
+            await userManager.ResetPasswordAsync(user,
+                Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token)), systemGeneratedPassword);
 
         if (resetPassword.Succeeded)
         {
-            return new ResetPasswordResponse($"Your password has been reset. your new password is: {systemGeneratedPassword}");
+            return new ResetPasswordResponse(
+                $"Your password has been reset. your new password is: {systemGeneratedPassword}");
         }
 
         throw new InvalidOperationException(resetPassword.Errors.FirstOrDefault()?.Description);

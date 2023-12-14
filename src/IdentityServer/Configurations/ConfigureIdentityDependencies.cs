@@ -2,7 +2,6 @@
 using FluentValidation;
 using IdentityServer.BackgroundServices;
 using IdentityServer.Brokers.Database;
-using IdentityServer.Brokers.Providers;
 using IdentityServer.Domain.Models;
 using IdentityServer.Shared.Utils;
 using MediatR;
@@ -15,16 +14,16 @@ using Quartz;
 
 namespace IdentityServer.Configurations;
 
-public static class ConfigureOpenIddict
+public static class ConfigureIdentityDependencies
 {
-   public static void AddAuthenticationModule(this IServiceCollection services, IConfiguration configuration)
+   public static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<RequestContextProvider>();
         services.AddScoped<UserManager<ApplicationUser>>();
         services.AddScoped<SignInManager<ApplicationUser>>();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ApplicationUser).Assembly));
         services.AddHostedService<ClientSeedingService>();
         services.AddHttpContextAccessor();
+        services.AddAuthorization();
         
         var asm = Assembly.GetExecutingAssembly();
         services.AddValidatorsFromAssembly(asm);
@@ -101,7 +100,8 @@ public static class ConfigureOpenIddict
             }).AddServer(options =>
             {
                 // Enable the authorization, logout, token and userinfo endpoints.
-                options.SetAuthorizationEndpointUris("/connect/authorize")
+                options
+                    .SetAuthorizationEndpointUris("/connect/authorize")
                     .SetLogoutEndpointUris("/connect/logout")
                     .SetTokenEndpointUris("/connect/token")
                     .SetIntrospectionEndpointUris("/connect/introspect")
