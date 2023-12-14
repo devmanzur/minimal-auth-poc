@@ -1,0 +1,56 @@
+@IdentityEndpoints = http://localhost:5048
+
+GET {{IdentityEndpoints}}/weatherforecast/
+Accept: application/json
+
+### Sign Up
+
+POST {{IdentityEndpoints}}/identity/register
+accept: */*
+Content-Type: application/json
+
+{
+  "email": "levirgon@gmail.com",
+  "password": "12345678aA!"
+}
+
+### Sign In
+
+POST {{IdentityEndpoints}}/identity/login?useCookies=false&useSessionCookies=false
+accept: application/json
+Content-Type: application/json
+
+{
+  "email": "levirgon@gmail.com",
+  "password": "12345678aA!"
+}
+
+> {%
+    client.global.set("access_token", response.body.accessToken);
+    client.global.set("refresh_token", response.body.refreshToken);
+%}
+
+
+### Get User Profile
+GET {{IdentityEndpoints}}/identity/manage/info
+Authorization: Bearer {{access_token}}
+accept: application/json
+
+### Get Refresh Token
+POST {{IdentityEndpoints}}/identity/refresh
+accept: application/json
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+> {%
+    client.global.set("access_token", response.body.accessToken);
+    client.global.set("refresh_token", response.body.refreshToken);
+%}
+
+###
+
+
+
