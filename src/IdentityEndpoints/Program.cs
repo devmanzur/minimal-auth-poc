@@ -1,19 +1,13 @@
-using IdentityEndpoints.Brokers.Database;
+using IdentityEndpoints.Configurations;
 using IdentityEndpoints.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+using IdentityEndpoints.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuthorization();
-builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("AuthDatabase")));
-builder.Services
-    .AddIdentityApiEndpoints<ApplicationUser>()
-    .AddEntityFrameworkStores<AppIdentityDbContext>();
+builder.Services.ConfigureIdentity(builder.Configuration);
 
 var app = builder.Build();
 
@@ -28,11 +22,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/weatherforecast", () => "Welcome!!")
-    .WithName("GetWeatherForecast")
-    .RequireAuthorization() // 👈 Add this
-    .WithOpenApi();
-
-app.MapGroup("/identity").MapIdentityApi<ApplicationUser>();
+app.MapIdentityEndpoints();
+app.MapAccountEndpoints();
 
 app.Run();

@@ -1,22 +1,21 @@
 @IdentityEndpoints = http://localhost:5048
 
-GET {{IdentityEndpoints}}/weatherforecast/
-Accept: application/json
-
 ### Sign Up
 
-POST {{IdentityEndpoints}}/identity/register
+POST {{IdentityEndpoints}}/accounts
 accept: */*
 Content-Type: application/json
 
 {
-  "email": "levirgon@gmail.com",
-  "password": "12345678aA!"
+  "email": "manzur@gmail.com",
+  "password": "12345678aA!",
+  "firstName": "Manzur",
+  "lastName": "Alahi"
 }
 
 ### Sign In
 
-POST {{IdentityEndpoints}}/identity/login?useCookies=false&useSessionCookies=false
+POST {{IdentityEndpoints}}/connect/token?useCookies=false&useSessionCookies=false
 accept: application/json
 Content-Type: application/json
 
@@ -32,12 +31,12 @@ Content-Type: application/json
 
 
 ### Get User Profile
-GET {{IdentityEndpoints}}/identity/manage/info
+GET {{IdentityEndpoints}}/accounts/manage/info
 Authorization: Bearer {{access_token}}
 accept: application/json
 
 ### Get Refresh Token
-POST {{IdentityEndpoints}}/identity/refresh
+POST {{IdentityEndpoints}}/connect/refresh-token
 accept: application/json
 Content-Type: application/json
 
@@ -50,7 +49,35 @@ Content-Type: application/json
     client.global.set("refresh_token", response.body.refreshToken);
 %}
 
+### Forgot Password
+
+POST {{IdentityEndpoints}}/accounts/forgot-password
+accept: application/json
+Content-Type: application/json
+
+{
+  "email": "manzur@gmail.com"
+}
+
+> {%
+    client.global.set("reset_token", response.body.data.resetToken);
+%}
+
+### Reset Password
+
+POST https://localhost:7173/accounts/reset-password
+accept: application/json
+Content-Type: application/json
+
+{
+  "email": "manzur@gmail.com",
+  "token": "{{reset_token}}"
+}
+
 ###
+
+
+
 
 
 
