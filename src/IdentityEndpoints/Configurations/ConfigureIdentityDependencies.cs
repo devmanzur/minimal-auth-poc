@@ -2,7 +2,7 @@
 using FluentValidation;
 using IdentityEndpoints.Brokers.Database;
 using IdentityEndpoints.Domain.Models;
-using IdentityEndpoints.Utils;
+using IdentityEndpoints.Shared.Utils;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

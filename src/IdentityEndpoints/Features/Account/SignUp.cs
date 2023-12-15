@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using IdentityEndpoints.Domain.Models;
-using IdentityEndpoints.Utils;
+using IdentityEndpoints.Shared.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 

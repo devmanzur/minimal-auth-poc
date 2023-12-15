@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace IdentityEndpoints.Utils
+namespace IdentityEndpoints.Shared.Utils
 {
     public static class ValidationUtils
     {

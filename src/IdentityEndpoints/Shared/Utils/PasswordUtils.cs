@@ -1,4 +1,4 @@
-namespace IdentityEndpoints.Utils
+namespace IdentityEndpoints.Shared.Utils
 {
     public static class PasswordUtils
     {
