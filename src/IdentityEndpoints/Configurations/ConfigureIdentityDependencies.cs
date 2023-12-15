@@ -10,7 +10,7 @@ namespace IdentityEndpoints.Configurations;
 
 public static class ConfigureIdentityDependencies
 {
-    public static IServiceCollection ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigureIdentityServer(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuthorization();
         services.AddDbContext<AppIdentityDbContext>(options =>

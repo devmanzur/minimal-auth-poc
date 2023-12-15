@@ -15,7 +15,7 @@ builder.Services.AddRouting(options =>
     options.LowercaseQueryStrings = true;
 });
 // Setup OpenIddict
-builder.Services.ConfigureIdentity(builder.Configuration);
+builder.Services.ConfigureIdentityServer(builder.Configuration);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 

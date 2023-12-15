@@ -16,7 +16,7 @@ namespace IdentityServer.Configurations;
 
 public static class ConfigureIdentityDependencies
 {
-   public static void ConfigureIdentity(this IServiceCollection services, IConfiguration configuration)
+   public static void ConfigureIdentityServer(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<UserManager<ApplicationUser>>();
         services.AddScoped<SignInManager<ApplicationUser>>();
